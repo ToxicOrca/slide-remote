@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 108dp adaptive icon foreground: a 2x2 slide grid with one tile lit -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FF4FD1C5"
+        android:pathData="M34,36h17a3,3 0,0 1,3 3v10a3,3 0,0 1,-3 3h-17a3,3 0,0 1,-3 -3v-10a3,3 0,0 1,3 -3z" />
+    <path
+        android:fillColor="#FF2A3342"
+        android:pathData="M60,36h17a3,3 0,0 1,3 3v10a3,3 0,0 1,-3 3h-17a3,3 0,0 1,-3 -3v-10a3,3 0,0 1,3 -3z" />
+    <path
+        android:fillColor="#FF2A3342"
+        android:pathData="M34,58h17a3,3 0,0 1,3 3v10a3,3 0,0 1,-3 3h-17a3,3 0,0 1,-3 -3v-10a3,3 0,0 1,3 -3z" />
+    <path
+        android:fillColor="#FF2A3342"
+        android:pathData="M60,58h17a3,3 0,0 1,3 3v10a3,3 0,0 1,-3 3h-17a3,3 0,0 1,-3 -3v-10a3,3 0,0 1,3 -3z" />
+</vector>
