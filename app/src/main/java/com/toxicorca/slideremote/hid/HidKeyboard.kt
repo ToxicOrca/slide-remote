@@ -16,6 +16,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
+import com.toxicorca.slideremote.BuildConfig
 import com.toxicorca.slideremote.data.AppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -93,6 +94,9 @@ class HidKeyboard(
     private var proxyTimeout: Job? = null
     private var receiverRegistered = false
 
+    /** Debug builds only: a fake connected PC for screenshots (see src/debug). Bluetooth is left alone. */
+    @Volatile private var demoHost: String? = null
+
     private val _status = MutableStateFlow(HidStatus(HidState.IDLE))
     val status: StateFlow<HidStatus> = _status.asStateFlow()
 
@@ -118,6 +122,7 @@ class HidKeyboard(
     /** Safe to call repeatedly (after permission grant, Bluetooth on, app start...). */
     @Synchronized
     fun start() {
+        if (demoHost != null) return
         registerStateReceiver()
         if (userDisabled) {
             setStatus(HidState.OFF)
@@ -173,6 +178,13 @@ class HidKeyboard(
                 )
             }
         }
+    }
+
+    /** Debug builds only: report [hostName] as connected and accept every send without Bluetooth. */
+    fun startDemo(hostName: String) {
+        if (!BuildConfig.DEBUG) return
+        demoHost = hostName
+        _status.value = HidStatus(HidState.CONNECTED, hostName, DEMO_ADDRESS)
     }
 
     /** Fully release the HID registration (e.g. so another keyboard app can use it). */
@@ -344,6 +356,7 @@ class HidKeyboard(
     // ---------------------------------------------------------------- hosts
 
     fun pairedDevices(): List<HostDevice> {
+        demoHost?.let { return listOf(HostDevice(it, DEMO_ADDRESS, isComputer = true)) }
         val a = adapter ?: return emptyList()
         if (!hasPermission()) return emptyList()
         return try {
@@ -403,6 +416,7 @@ class HidKeyboard(
 
     /** Queue a keystroke sequence. Returns false (and sends nothing) when no PC is connected. */
     fun send(actions: List<HidAction>): Boolean {
+        if (demoHost != null) return true
         if (host == null || hid == null) return false
         return queue.trySend(actions).isSuccess
     }
@@ -450,6 +464,7 @@ class HidKeyboard(
         hostAddress: String? = null,
         message: String? = null,
     ) {
+        if (demoHost != null) return
         _status.update { HidStatus(state, hostName, hostAddress, message) }
     }
 
@@ -487,5 +502,9 @@ class HidKeyboard(
             // ACTION_STATE_CHANGED is a protected system broadcast, so exporting is safe.
             ContextCompat.RECEIVER_EXPORTED
         )
+    }
+
+    private companion object {
+        const val DEMO_ADDRESS = "00:00:00:00:00:00"
     }
 }

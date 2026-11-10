@@ -208,6 +208,8 @@ fun PresentScreen(
             }
             BoxWithConstraints(Modifier.fillMaxSize()) {
                 val landscape = maxWidth > maxHeight
+                // Short landscape phones have no room for a stacked preview.
+                val stackPanel = maxHeight >= 420.dp
                 if (landscape) {
                     Row(Modifier.fillMaxSize()) {
                         NowPanel(
@@ -219,7 +221,7 @@ fun PresentScreen(
                             onNext = vm::next,
                             showRunning = showRunning,
                             onToggleShowRunning = vm::toggleShowRunning,
-                            stacked = true,
+                            stacked = stackPanel,
                             modifier = Modifier
                                 .weight(0.42f)
                                 .fillMaxHeight()
@@ -374,7 +376,7 @@ private fun NowPanel(
                     )
                 }
             }
-            NumberBadge(current, highlighted = true, modifier = Modifier.align(Alignment.TopStart).padding(6.dp))
+            NumberBadge(current, highlighted = true, modifier = Modifier.align(Alignment.BottomStart).padding(6.dp))
         }
     }
 
@@ -437,7 +439,9 @@ private fun NowPanel(
     ) {
         if (stacked) {
             // Preview shrinks to fit so the Prev/Next buttons are never squeezed out.
-            Preview(Modifier.weight(1f, fill = false).fillMaxWidth())
+            // No fillMaxWidth: a forced width stops aspectRatio from shrinking, and the
+            // oversized preview then draws over the text below it.
+            Preview(Modifier.weight(1f, fill = false).align(Alignment.CenterHorizontally))
             Info(Modifier.fillMaxWidth())
             StepButtons(Modifier.fillMaxWidth())
         } else {

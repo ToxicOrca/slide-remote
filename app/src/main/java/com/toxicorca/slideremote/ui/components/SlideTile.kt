@@ -83,7 +83,7 @@ fun SlideTile(
             }
             Row(
                 Modifier
-                    .align(Alignment.TopStart)
+                    .align(Alignment.BottomStart)
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
